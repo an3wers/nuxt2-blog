@@ -45,6 +45,9 @@ export default {
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
+
+    // ['cookie-universal-nuxt'],
+
   ],
 
   // Build Configuration: https://go.nuxtjs.dev/config-build

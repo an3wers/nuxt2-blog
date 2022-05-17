@@ -1,4 +1,5 @@
 import axios from 'axios'
+import Cookies from 'js-cookie'
 
 export const state = () => ({
     postsLoaded: [],
@@ -67,26 +68,56 @@ export const actions = {
 
                 const token = res.data.idToken
                 commit('setToken', token)
+
+                // token to local storage
                 localStorage.setItem('token', token)
+
+                // token to cookie
+                Cookies.set('jwt', token, {sameSite: 'None', secure: true})
+                // this.$cookies.set('jwt', token, {sameSite: 'none',
+                // secure: true})
 
             })
             .catch(e => console.log(e))
     },
 
-    initAuth({commit}) {
-        let token = localStorage.getItem('token')
-        if (!token) {
-            return false
+    initAuth({ commit }, req) {
+        let token
+
+        if (req) {
+
+            // если есть сервер выполняем логику
+            if (!req.headers.cookie) {
+                return false
+            } else {
+
+                const jwtCookie = req.headers.cookie
+                    .split(';')
+                    .find(t => t.trim().startsWith('jwt='))
+                if (!jwtCookie) {
+                    return false
+                } else {
+                    token = jwtCookie.split('=')[1]
+                }
+            }
         }
+        // если не серверный метод, то это условие
         else {
-            commit('setToken', token)
+            token = localStorage.getItem('token')
+            if (!token) {
+                return false
+            }
         }
+
+        commit('setToken', token)
+
     },
 
     // Разлогиниваем пользователя
     logoutUser({ commit }) {
         commit('removeToken')
         localStorage.removeItem('token')
+        Cookies.remove('jwt', {sameSite: 'None', secure: true})
     },
     // Добавлю пост 
     addPost({ commit, state }, post) {

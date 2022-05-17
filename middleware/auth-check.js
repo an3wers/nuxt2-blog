@@ -1,8 +1,11 @@
-export default function (context) {
+export default function(context) {
 
     if(process.client) {
-        context.store.dispatch('initAuth')
+        // если клиент, передаем req как null
+        context.store.dispatch('initAuth', null)
+    } else {
+        // если сервер
+        context.store.dispatch('initAuth', context.req)
     }
-
     
 }

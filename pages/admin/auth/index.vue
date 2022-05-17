@@ -17,6 +17,7 @@ export default {
       },
     };
   },
+  middleware: ['auth-check'],
   methods: {
     onSubmit() {
       this.$store.dispatch("authUser", this.user)
